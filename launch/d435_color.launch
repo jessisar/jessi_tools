@@ -1,9 +1,7 @@
 <launch>
-  <arg name="external_manager"    default="false"/>
-  <arg name="manager"             default="realsense2_camera_manager"/>
   <group ns="camera">
 		<node pkg="image_view" type="image_view" name="d435_color" args="image:=/camera/color/image_raw"/>
-		<node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen" />
-		<node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" />
+		<node pkg="nodelet" type="nodelet" name="realsense2_camera_manager" args="manager" output="screen" />
+		<node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory realsense2_camera_manager" />
   </group>
 </launch>
