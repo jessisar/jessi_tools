@@ -32,6 +32,10 @@ https://github.com/IntelRealSense/librealsense/blob/master/third-party/libtm/lib
   <arg name="publish_odom_tf"     default="true"/>
   
   <group ns="$(arg camera)">
+
+	<node pkg="image_view" type="image_view" name="t265_fisheye1" args="image:=/camera/fisheye1/image_raw"/>
+	<node pkg="image_view" type="image_view" name="t265_fisheye2" args="image:=/camera/fisheye2/image_raw"/>
+
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
       <arg name="tf_prefix"                value="$(arg tf_prefix)"/>
       <arg name="serial_no"                value="$(arg serial_no)"/>
