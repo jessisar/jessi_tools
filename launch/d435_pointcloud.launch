@@ -1,0 +1,11 @@
+<launch>
+  <group ns="camera">
+		<node pkg="nodelet" type="nodelet" name="realsense2_camera_manager" args="manager" />
+		<node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory realsense2_camera_manager">
+  		<param name="enable_pointcloud" type="bool" value="true" />
+		</node>
+
+		<node name="rviz" pkg="rviz" type="rviz" args="-d $(find jessi_tools)/rviz/d435_pointcloud.rviz" required="true" />
+
+  </group>
+</launch>
