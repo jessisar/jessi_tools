@@ -102,33 +102,6 @@
 	<node pkg="image_view" type="image_view" name="d435_color" args="image:=/camera/color/image_raw"/>
 
   <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen" required="$(arg required)"/>
-  <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)">
-    <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
-    <param name="usb_port_id"              type="str"  value="$(arg usb_port_id)"/>
-    <param name="device_type"              type="str"  value="$(arg device_type)"/>
-    <param name="json_file_path"           type="str"  value="$(arg json_file_path)"/>
-    <param name="rosbag_filename"          type="str"  value="$(arg rosbag_filename)"/>
-
-    <param name="enable_pointcloud"        type="bool" value="$(arg enable_pointcloud)"/>
-    <param name="pointcloud_texture_stream" type="str" value="$(arg pointcloud_texture_stream)"/>
-    <param name="pointcloud_texture_index"  type="int" value="$(arg pointcloud_texture_index)"/>
-    <param name="enable_sync"              type="bool" value="$(arg enable_sync)"/>
-    <param name="align_depth"              type="bool" value="$(arg align_depth)"/>
-
-    <param name="fisheye_width"            type="int"  value="$(arg fisheye_width)"/>
-    <param name="fisheye_height"           type="int"  value="$(arg fisheye_height)"/>
-    <param name="enable_fisheye"           type="bool" value="$(arg enable_fisheye)"/>
-    <param name="enable_fisheye1"          type="bool" value="$(arg enable_fisheye1)"/>
-    <param name="enable_fisheye2"          type="bool" value="$(arg enable_fisheye2)"/>
-
-    <param name="depth_width"              type="int"  value="$(arg depth_width)"/>
-    <param name="depth_height"             type="int"  value="$(arg depth_height)"/>
-    <param name="enable_depth"             type="bool" value="$(arg enable_depth)"/>
-
-    <param name="color_width"              type="int"  value="$(arg color_width)"/>
-    <param name="color_height"             type="int"  value="$(arg color_height)"/>
-    <param name="enable_color"             type="bool" value="$(arg enable_color)"/>
-
-  </node>
+  <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)"/>
   </group>
 </launch>
