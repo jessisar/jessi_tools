@@ -97,6 +97,10 @@
   <arg name="enable_fisheye2"     default="true"/>
 
   <group ns="$(arg camera)">
+
+
+	<node pkg="image_view" type="image_view" name="d435_color" args="image:=/camera/color/image_raw"/>
+
   <node unless="$(arg external_manager)" pkg="nodelet" type="nodelet" name="$(arg manager)" args="manager" output="screen" required="$(arg required)"/>
   <node pkg="nodelet" type="nodelet" name="realsense2_camera" args="load realsense2_camera/RealSenseNodeFactory $(arg manager)" required="$(arg required)">
     <param name="serial_no"                type="str"  value="$(arg serial_no)"/>
