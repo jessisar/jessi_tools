@@ -8,7 +8,6 @@ Panels:
         - /Status1
         - /Grid1
         - /Imu1
-        - /Imu1/Status1
       Splitter Ratio: 0.45515507459640503
     Tree Height: 1148
   - Class: rviz/Selection
@@ -61,7 +60,7 @@ Visualization Manager:
       Enabled: true
       History Length: 1
       Name: Imu
-      Topic: /camera/accel/sample
+      Topic: /camera/imu
       Unreliable: false
       Value: true
   Enabled: true

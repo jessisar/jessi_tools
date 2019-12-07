@@ -8,7 +8,8 @@ Panels:
         - /Status1
         - /Grid1
         - /Imu1
-        - /Imu1/Status1
+        - /Imu1/Axes properties1
+        - /Imu1/Acceleration properties1
       Splitter Ratio: 0.45515507459640503
     Tree Height: 1148
   - Class: rviz/Selection
@@ -55,20 +56,34 @@ Visualization Manager:
       Plane Cell Count: 53
       Reference Frame: <Fixed Frame>
       Value: true
-    - Alpha: 1
-      Class: rviz_plugin_tutorials/Imu
-      Color: 138; 226; 52
+    - Acceleration properties:
+        Acc. vector alpha: 1
+        Acc. vector color: 255; 0; 0
+        Acc. vector scale: 1
+        Derotate acceleration: true
+        Enable acceleration: true
+      Axes properties:
+        Axes scale: 10
+        Enable axes: true
+      Box properties:
+        Box alpha: 1
+        Box color: 255; 0; 0
+        Enable box: false
+        x_scale: 10
+        y_scale: 110
+        z_scale: 1
+      Class: rviz_imu_plugin/Imu
       Enabled: true
-      History Length: 1
       Name: Imu
       Topic: /imu/complementary/filtered
       Unreliable: false
       Value: true
+      fixed_frame_orientation: true
   Enabled: true
   Global Options:
     Background Color: 46; 52; 54
     Default Light: true
-    Fixed Frame: camera_accel_frame
+    Fixed Frame: camera_link
     Frame Rate: 15
   Name: root
   Tools:
@@ -92,7 +107,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 86.89482116699219
+      Distance: 107.81572723388672
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -107,10 +122,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.590397834777832
+      Pitch: 0.6253979206085205
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.9117438793182373
+      Yaw: 1.2417443990707397
     Saved: ~
 Window Geometry:
   Displays:
