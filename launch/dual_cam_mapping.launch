@@ -13,20 +13,16 @@
   <arg name="initial_reset"             default="false"/>
   <arg name="enable_fisheye_camera1"    default="false"/>
   <arg name="enable_fisheye_camera2"    default="true"/>
-  <arg name="color_width"               default="640"/>
-  <arg name="color_height"              default="480"/>
-  <arg name="depth_width"               default="640"/>
-  <arg name="depth_height"              default="480"/>
+  <arg name="window_width"               default="640"/>
+  <arg name="window_height"              default="480"/>
   <arg name="topic_odom_in"             default="odom_in"/>
   <arg name="calib_odom_file"           default=""/>
-  <arg name="manager"             			default="realsense2_camera_manager"/>
   <arg name="publish_tf"                default="true"/>
   <arg name="tf_publish_rate"           default="0"/>
 
   <group ns="$(arg camera1)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
       <arg name="device_type"           value="t265"/>
-      <arg name="serial_no"             value=""/>
       <arg name="tf_prefix"         		value="$(arg tf_prefix_camera1)"/>
       <arg name="initial_reset"         value="$(arg initial_reset)"/>
       <arg name="enable_fisheye1"       value="$(arg enable_fisheye_camera1)"/>
@@ -40,12 +36,8 @@
   <group ns="$(arg camera2)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
       <arg name="device_type"           		value="d435"/>
-      <arg name="serial_no"             		value=""/>
       <arg name="tf_prefix"                	value="$(arg tf_prefix_camera2)"/>
       <arg name="external_manager"         	value="false"/>
-      <arg name="manager"                  	value="$(arg manager)"/>
-      <arg name="usb_port_id"              	value=""/>
-      <arg name="json_file_path"           	value=""/>
 
       <arg name="enable_pointcloud"        value="true"/>
       <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/>
@@ -58,16 +50,16 @@
       <arg name="enable_fisheye1"           value="$(arg enable_fisheye_camera2)"/>
       <arg name="enable_fisheye2"           value="$(arg enable_fisheye_camera2)"/>
 
-      <arg name="depth_width"              value="$(arg depth_width)"/>
-      <arg name="depth_height"             value="$(arg depth_height)"/>
+      <arg name="depth_width"              value="$(arg window_width)"/>
+      <arg name="depth_height"             value="$(arg window_height)"/>
       <arg name="enable_depth"             value="true"/>
 
-      <arg name="color_width"              value="$(arg color_width)"/>
-      <arg name="color_height"             value="$(arg color_height)"/>
+      <arg name="color_width"              value="$(arg window_width)"/>
+      <arg name="color_height"             value="$(arg window_height)"/>
       <arg name="enable_color"             value="true"/>
 
-      <arg name="infra_width"              value="640"/>
-      <arg name="infra_height"             value="480"/>
+      <arg name="infra_width"              value="$(arg window_width)"/>
+      <arg name="infra_height"             value="$(arg window_height)"/>
       <arg name="enable_infra1"            value="true"/>
       <arg name="enable_infra2"            value="true"/>
 
@@ -83,7 +75,6 @@
       <arg name="publish_tf"               value="$(arg publish_tf)"/>
       <arg name="tf_publish_rate"          value="$(arg tf_publish_rate)"/>
 
-      <arg name="filters"                  value=""/>
       <arg name="clip_distance"            value="-2"/>
       <arg name="linear_accel_cov"         value="1.0"/>
       <arg name="initial_reset"            value="$(arg initial_reset)"/>
@@ -110,11 +101,9 @@
 			  <arg name="map_frame_id"            		value="map"/>
 <!--			  <arg name="ground_truth_frame_id"   		value="map"/>      e.g., "world" -->
 <!--			  <arg name="ground_truth_base_frame_id" 	value=""/>   e.g., "tracker", a fake frame matching the frame "frame_id" (but on different TF tree) -->
-			  <arg name="namespace"               		value="rtabmap"/>
 			  <arg name="database_path"           		value="~/.ros/rtabmap.db"/>
 			  <arg name="queue_size"              		value="10"/>
 			  <arg name="wait_for_transform"      		value="0.2"/>
-			  <arg name="launch_prefix"           		value=""/>              <!-- for debugging purpose, it fills launch-prefix tag of the nodes -->
 			  <arg name="output"                  		value="log"/>        <!-- Control node output (screen or log) -->
 			  <arg name="publish_tf_map"          		value="true"/>
 
