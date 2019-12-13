@@ -95,18 +95,14 @@
 
 	<include file="$(find rtabmap_ros)/launch/rtabmap.launch">
    	<arg name="args" value="--delete_db_on_start"/>
-
 				<arg name="frame_id"                		value="base_link"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
   			<arg name="odom_frame_id"           		value=""/>                <!-- If set, TF is used to get odometry instead of the topic -->
 			  <arg name="map_frame_id"            		value="map"/>
-<!--			  <arg name="ground_truth_frame_id"   		value="map"/>      e.g., "world" -->
-<!--			  <arg name="ground_truth_base_frame_id" 	value=""/>   e.g., "tracker", a fake frame matching the frame "frame_id" (but on different TF tree) -->
 			  <arg name="database_path"           		value="~/.ros/rtabmap.db"/>
 			  <arg name="queue_size"              		value="10"/>
 			  <arg name="wait_for_transform"      		value="0.2"/>
 			  <arg name="output"                  		value="log"/>        <!-- Control node output (screen or log) -->
 			  <arg name="publish_tf_map"          		value="true"/>
-
   			<arg name="odom_sensor_sync"        		value="true"/>
   			<arg name="odom_guess_frame_id"     		value="t265_odom_frame"/>
         <arg name="odom_topic" 									value="odom"/>
@@ -114,8 +110,9 @@
         <arg name="depth_topic" 								value="/d435/aligned_depth_to_color/image_raw"/>
         <arg name="camera_info_topic" 					value="/d435/color/camera_info"/>
         <arg name="depth_camera_info_topic" 		value="/d435/depth/camera_info"/>
-        <arg name="rtabmapviz" 									value="false"/>
+        <arg name="rtabmapviz" 									value="true"/>
         <arg name="rviz" 												value="true"/>
+        <arg name="approx_sync" 								value="false"/>
     </include>
 
   <node pkg="tf" type="static_transform_publisher" name="base_to_camera" args="0 0 0 0 0 0 /base_link /camera_link 100"/>
