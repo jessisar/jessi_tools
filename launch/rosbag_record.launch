@@ -1,0 +1,17 @@
+<launch>
+
+ <node pkg="rosbag" type="record" name="rosbag_record_map"
+       args="record -o $(find jessi_tools)/recordings/rosbag_record_map
+/rtabmap/grid_map
+/rtabmap/localization_pose
+/rtabmap/mapData
+/rtabmap/mapGraph
+/rtabmap/mapPath
+/rtabmap/odom
+/tf
+/tf_static
+/base_link
+/camera_link
+"/>  
+
+</launch>

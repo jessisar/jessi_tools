@@ -1,0 +1,13 @@
+<!--
+     This launch file provides an example of how to use ekf as nodelet or as node in one launch file.
+     By providing arguments like "use_nodelets this launch file will start a nodelet instead of a node.
+     This is very usefull in experimental setup to allow easy switch between nodelets and node.
+     Also it allows you to specify the manager the nodelet should run in.
+-->
+
+<launch>
+
+ 	<node pkg="rosbag" type="play" name="rosbag_record_map" output="screen" 
+		args="--clock $(find jessi_tools)/recordings/rosbag_record_map_2019-12-14-14-26-51.bag"/>
+
+</launch>
