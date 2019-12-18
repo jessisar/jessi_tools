@@ -1,6 +1,8 @@
 <launch>  
 
-  <node pkg="tf" type="static_transform_publisher" name="camera_link_to_sensor" args="0 0 0 0 0 0 /camera_link /d435_link 100"/>
+	<node pkg="tf" type="static_transform_publisher" name="odom_to_t265_odom" args="0 0 0 0 0 0 /odom /t265_odom_frame 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="t265_pose_to_camera_link" args="0 0 0 0 0 0 /t265_pose_frame /camera_link 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="camera_link_to_d435" args="0 0 0 0 0 0 /camera_link /d435_link 100"/>
 
   <arg name="camera1"              			default="t265"/>
   <arg name="camera2"              			default="d435"/>
@@ -34,7 +36,7 @@
   <arg name="odom_tf_angular_variance" 		default="1"/>             <!-- If TF is used to get odometry, this is the default angular variance -->
   <arg name="odom_tf_linear_variance"  		default="1"/>             <!-- If TF is used to get odometry, this is the default linear variance -->
   <arg name="odom_args"                		default=""/>              <!-- More arguments for odometry (overwrite same parameters in rtabmap_args) -->
-  <arg name="odom_sensor_sync"         		default="false"/>
+  <arg name="odom_sensor_sync"         		default="true"/>
   <arg name="odom_guess_frame_id"        	default=""/>
   <arg name="odom_guess_min_translation" 	default="0"/>
   <arg name="odom_guess_min_rotation"    	default="0"/> 
@@ -117,6 +119,21 @@
   <arg if="$(arg rgbd_sync)"      name="rgbd_topic_relay"          default="$(arg rgbd_topic)"/>
   <arg unless="$(arg rgbd_sync)"  name="rgbd_topic_relay"          default="$(arg rgbd_topic)_relay"/>
 
+  <group ns="$(arg camera1)">
+    <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
+      <arg name="device_type"           value="t265"/>
+      <arg name="tf_prefix"         		value="$(arg tf_prefix_camera1)"/>
+      <arg name="initial_reset"         value="$(arg initial_reset)"/>
+      <arg name="enable_fisheye1"       value="$(arg enable_fisheye_camera1)"/>
+      <arg name="enable_fisheye2"       value="$(arg enable_fisheye_camera1)"/>
+      <arg name="topic_odom_in"         value="$(arg topic_odom_in)"/>
+      <arg name="calib_odom_file"       value="$(arg calib_odom_file)"/>
+      <arg name="publish_odom_tf"       value="true"/>
+      <arg name="enable_infra1"         value="false"/>
+      <arg name="enable_infra2"         value="false"/>
+    </include>
+  </group>
+
   <group ns="$(arg camera2)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
       <arg name="device_type"           		value="d435i"/>
@@ -194,6 +211,7 @@
       <param name="publish_tf"             type="bool"   value="false"/>
       <param name="publish_null_when_lost" type="bool"   value="true"/>
       <param name="guess_from_tf"          type="bool"   value="true"/>
+      <param name="guess_frame_id"              type="string" value="$(arg odom_guess_frame_id)"/>
 
       <param name="Odom/FillInfoData"      type="string" value="true"/>
       <param name="Odom/ResetCountdown"    type="string" value="1"/>
@@ -212,6 +230,9 @@
       
       <param name="database_path"        		type="string" value="$(arg database_path)"/>
       <param name="Kp/DetectorStrategy"    	type="string" value="6"/> <!-- use same features as odom -->
+
+      <param name="odom_sensor_sync"         type="bool"   value="$(arg odom_sensor_sync)"/>
+  		<param name="odom_guess_frame_id"     type="string" value="t265_odom_frame"/>
 
       <!-- localization mode -->
       <param name="Mem/InitWMWithAllNodes" type="string" value="$(arg localization)"/> 
