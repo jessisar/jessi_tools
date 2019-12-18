@@ -8,13 +8,13 @@
 <launch>
   <arg name="camera1"              			default="t265"/>
   <arg name="camera2"              			default="d435"/>
+  <arg name="initial_reset"             default="false"/>
   <arg name="tf_prefix_camera1"         default="$(arg camera1)"/>
   <arg name="tf_prefix_camera2"         default="$(arg camera2)"/>
-  <arg name="initial_reset"             default="false"/>
   <arg name="enable_fisheye_camera1"    default="false"/>
   <arg name="enable_fisheye_camera2"    default="true"/>
-  <arg name="window_width"               default="640"/>
-  <arg name="window_height"              default="480"/>
+  <arg name="window_width"              default="640"/>
+  <arg name="window_height"             default="480"/>
   <arg name="topic_odom_in"             default="odom_in"/>
   <arg name="calib_odom_file"           default=""/>
   <arg name="publish_tf"                default="true"/>
@@ -30,47 +30,49 @@
       <arg name="topic_odom_in"         value="$(arg topic_odom_in)"/>
       <arg name="calib_odom_file"       value="$(arg calib_odom_file)"/>
       <arg name="publish_odom_tf"       value="true"/>
+      <arg name="enable_infra1"         value="false"/>
+      <arg name="enable_infra2"         value="false"/>
     </include>
   </group>
 
   <group ns="$(arg camera2)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
-      <arg name="device_type"           		value="d435"/>
+      <arg name="device_type"           		value="d435i"/>
       <arg name="tf_prefix"                	value="$(arg tf_prefix_camera2)"/>
       <arg name="external_manager"         	value="false"/>
 
-      <arg name="enable_pointcloud"        value="true"/>
+      <arg name="enable_pointcloud"        	value="true"/>
       <arg name="pointcloud_texture_stream" value="RS2_STREAM_COLOR"/>
       <arg name="pointcloud_texture_index"  value="0"/>
-      <arg name="enable_sync"              value="true"/>
-      <arg name="align_depth"              value="true"/>
+      <arg name="enable_sync"              	value="true"/>
+      <arg name="align_depth"              	value="true"/>
 
-      <arg name="fisheye_width"            value="640"/>
-      <arg name="fisheye_height"           value="480"/>
+      <arg name="fisheye_width"            	value="640"/>
+      <arg name="fisheye_height"           	value="480"/>
       <arg name="enable_fisheye1"           value="$(arg enable_fisheye_camera2)"/>
       <arg name="enable_fisheye2"           value="$(arg enable_fisheye_camera2)"/>
 
-      <arg name="depth_width"              value="$(arg window_width)"/>
-      <arg name="depth_height"             value="$(arg window_height)"/>
-      <arg name="enable_depth"             value="true"/>
+      <arg name="depth_width"              	value="$(arg window_width)"/>
+      <arg name="depth_height"             	value="$(arg window_height)"/>
+      <arg name="enable_depth"             	value="true"/>
 
-      <arg name="color_width"              value="$(arg window_width)"/>
-      <arg name="color_height"             value="$(arg window_height)"/>
-      <arg name="enable_color"             value="true"/>
+      <arg name="color_width"              	value="$(arg window_width)"/>
+      <arg name="color_height"             	value="$(arg window_height)"/>
+      <arg name="enable_color"             	value="true"/>
 
-      <arg name="infra_width"              value="$(arg window_width)"/>
-      <arg name="infra_height"             value="$(arg window_height)"/>
-      <arg name="enable_infra1"            value="true"/>
-      <arg name="enable_infra2"            value="true"/>
+      <arg name="infra_width"              	value="$(arg window_width)"/>
+      <arg name="infra_height"            	value="$(arg window_height)"/>
+      <arg name="enable_infra1"            	value="false"/>
+      <arg name="enable_infra2"            	value="false"/>
 
-      <arg name="fisheye_fps"              value="30"/>
-      <arg name="depth_fps"                value="30"/>
-      <arg name="infra_fps"                value="30"/>
-      <arg name="color_fps"                value="30"/>
-      <arg name="gyro_fps"                 value="400"/>
-      <arg name="accel_fps"                value="250"/>
-      <arg name="enable_gyro"              value="true"/>
-      <arg name="enable_accel"             value="true"/>
+      <arg name="fisheye_fps"              	value="30"/>
+      <arg name="depth_fps"                	value="30"/>
+      <arg name="infra_fps"                	value="30"/>
+      <arg name="color_fps"                	value="30"/>
+      <arg name="gyro_fps"                 	value="400"/>
+      <arg name="accel_fps"                	value="250"/>
+      <arg name="enable_gyro"              	value="true"/>
+      <arg name="enable_accel"             	value="true"/>
 
       <arg name="publish_tf"               value="$(arg publish_tf)"/>
       <arg name="tf_publish_rate"          value="$(arg tf_publish_rate)"/>
@@ -94,12 +96,11 @@
   </node>
 
 	<include file="$(find rtabmap_ros)/launch/rtabmap.launch">
-   	<arg name="args" value="--delete_db_on_start"/>
 				<arg name="frame_id"                		value="camera_link"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
   			<arg name="odom_frame_id"           		value=""/>                <!-- If set, TF is used to get odometry instead of the topic -->
 			  <arg name="map_frame_id"            		value="map"/>
 			  <arg name="database_path"           		value="$(find jessi_tools)/generated_maps/rtabmap.db"/>
-			  <arg name="queue_size"              		value="10"/>
+			  <arg name="queue_size"              		value="1"/>
 			  <arg name="wait_for_transform"      		value="0.2"/>
 			  <arg name="output"                  		value="log"/>        <!-- Control node output (screen or log) -->
 			  <arg name="publish_tf_map"          		value="true"/>
@@ -113,6 +114,8 @@
         <arg name="rtabmapviz" 									value="true"/>
         <arg name="rviz" 												value="true"/>
         <arg name="approx_sync" 								value="false"/>
+  			<arg name="localization"            		value="false"/>
+  			<arg name="imu_topic"                		value="/camera/imu"/>   
 				<!--
 				<arg name="rviz_cfg"                default="$(find rtabmap_ros)/launch/config/rgbd.rviz" />
 				-->
