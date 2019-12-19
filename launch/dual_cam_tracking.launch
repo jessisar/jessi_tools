@@ -19,6 +19,13 @@
   <arg name="calib_odom_file"           default=""/>
   <arg name="publish_tf"                default="true"/>
   <arg name="tf_publish_rate"           default="0"/>
+  <arg name="imu_ignore_acc"          	default="true" />
+  <arg name="imu_topic"               	default="/camera/imu" />
+  <arg name="imu_remove_gravitational_acceleration" default="true" />
+  <arg name="cfg"                     	default="$(find jessi_tools)/config/tracking.ini" />
+
+  <arg name="frame_id"                	default="camera_link"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
+  <arg name="odom_frame"                default="odom"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
 
   <group ns="$(arg camera1)">
     <include file="$(find realsense2_camera)/launch/includes/nodelet.launch.xml">
@@ -30,8 +37,8 @@
       <arg name="topic_odom_in"         value="$(arg topic_odom_in)"/>
       <arg name="calib_odom_file"       value="$(arg calib_odom_file)"/>
       <arg name="publish_odom_tf"       value="true"/>
-      <arg name="enable_infra1"         value="true"/>
-      <arg name="enable_infra2"         value="true"/>
+      <arg name="enable_infra1"         value="false"/>
+      <arg name="enable_infra2"         value="false"/>
     </include>
   </group>
 
@@ -62,8 +69,8 @@
 
       <arg name="infra_width"              	value="$(arg window_width)"/>
       <arg name="infra_height"            	value="$(arg window_height)"/>
-      <arg name="enable_infra1"            	value="true"/>
-      <arg name="enable_infra2"            	value="true"/>
+      <arg name="enable_infra1"            	value="false"/>
+      <arg name="enable_infra2"            	value="false"/>
 
       <arg name="fisheye_fps"              	value="30"/>
       <arg name="depth_fps"                	value="30"/>
@@ -92,19 +99,72 @@
 		<param name="use_mag" type="bool" value="false" />
 		<param name="_publish_tf" type="bool" value="false" />
 		<param name="_world_frame" type="string" value="enu" />
-		<remap from="/imu/data_raw" to="/camera/imu"/>
+		<remap from="/imu/data_raw" to="$(arg imu_topic)"/>
+  </node>
+
+	<!-- Odometry fusion (EKF), refer to demo launch file in robot_localization for more info -->
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization" clear_params="true" output="screen">
+
+      <param name="frequency" value="50"/>
+      <param name="sensor_timeout" value="0.1"/>
+      <param name="two_d_mode" value="false"/>
+
+      <param name="odom_frame" value="odom"/>
+      <param name="base_link_frame" value="$(arg frame_id)"/>
+      <param name="world_frame" value="odom"/>
+
+      <param name="transform_time_offset" value="0.0"/>
+
+      <param name="odom0" value="/vo"/>
+      <param name="imu0" value="$(arg imu_topic)"/>
+
+      <!-- The order of the values is x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az. -->
+      <rosparam param="odom0_config">[true, true, true,
+                                      true, true, true,
+                                      false, false, false,
+                                      false, false, false,
+                                      false, false, false]</rosparam>
+
+      <rosparam     if="$(arg imu_ignore_acc)" param="imu0_config">[
+                                     false, false, false,
+                                     true,  true,  true,
+                                     false, false, false,
+                                     true,  true,  true,
+                                     false,  false,  false] </rosparam>
+      <rosparam unless="$(arg imu_ignore_acc)" param="imu0_config">[
+                                     false, false, false,
+                                     true,  true,  true,
+                                     false, false, false,
+                                     true,  true,  true,
+                                     true,  true,  true] </rosparam>  
+      
+      <param name="odom0_differential" value="false"/>
+      <param name="imu0_differential" value="false"/>
+
+      <param name="odom0_relative" value="false"/>
+      <param name="imu0_relative" value="true"/>
+
+      <param name="imu0_remove_gravitational_acceleration" value="$(arg imu_remove_gravitational_acceleration)"/>
+
+      <param name="print_diagnostics" value="false"/>
+
+      <!-- ======== ADVANCED PARAMETERS ======== -->
+      <param name="odom0_queue_size" value="25"/>
+      <param name="imu0_queue_size" value="50"/> 
   </node>
 
 	<include file="$(find rtabmap_ros)/launch/rtabmap.launch">
-				<arg name="frame_id"                		value="camera_link"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
-  			<arg name="odom_frame_id"           		value=""/>                <!-- If set, TF is used to get odometry instead of the topic -->
+				<arg name="frame_id"                		value="$(arg frame_id)"/>     <!-- Fixed frame id, you may set "base_link" or "base_footprint" if they are published -->
+  			<arg name="odom_frame_id"           		value="$(arg odom_frame)"/>                <!-- If set, TF is used to get odometry instead of the topic -->
 			  <arg name="map_frame_id"            		value="map"/>
-			  <arg name="database_path"           		value="$(find jessi_tools)/generated_maps/rtabmap.db"/>
-			  <arg name="queue_size"              		value="5"/>
-			  <arg name="wait_for_transform"      		value="0.0"/>
+  			<arg name="vo_frame_id"              		value="vo"/> <!-- Visual/Icp odometry frame ID for TF -->
+			  <arg name="database_path"           		value="$(find jessi_tools)/generated_maps/rtabmap_my_room_corner_from_launch.db"/>
+			  <arg name="queue_size"              		value="10"/>
+			  <arg name="wait_for_transform"      		value="0"/>
 			  <arg name="output"                  		value="log"/>        <!-- Control node output (screen or log) -->
 			  <arg name="publish_tf_map"          		value="true"/>
-  			<arg name="odom_sensor_sync"        		value="false"/>
+  			<arg name="odom_sensor_sync"        		value="true"/>
+  			<arg name="odom_guess_frame_id"     		value="t265_odom_frame"/>
         <arg name="odom_topic" 									value="odom"/>
         <arg name="rgb_topic" 									value="/d435/color/image_raw"/>
         <arg name="depth_topic" 								value="/d435/aligned_depth_to_color/image_raw"/>
@@ -112,16 +172,12 @@
         <arg name="depth_camera_info_topic" 		value="/d435/depth/camera_info"/>
         <arg name="rtabmapviz" 									value="true"/>
         <arg name="rviz" 												value="true"/>
-        <arg name="approx_sync" 								value="true"/>
+        <arg name="approx_sync" 								value="false"/>
   			<arg name="localization"            		value="true"/>
-        <param name="config_path"               value="$(find jessi_tools)/config/rtabmap.ini"/>
-  			<arg name="imu_topic"                		value="/camera/imu"/> 
-  			<arg name="rgbd_sync"               		value="true"/>         <!-- pre-sync rgb_topic, depth_topic, camera_info_topic -->
-  			<arg name="tag_linear_variance"      		value="0.0001" />
-  			<arg name="tag_angular_variance"     		value="1" />             <!-- >=9999 means ignore rotation in optimization, when rotation estimation of the tag is not reliable -->
-
+  			<arg name="imu_topic"                		value="/camera/imu"/>  
+  			<arg name="cfg"            							value="$(arg cfg)"/>  
 				<!--
-				<arg name="rviz_cfg"                		default="$(find rtabmap_ros)/launch/config/rgbd.rviz" />
+				<arg name="rviz_cfg"                default="$(find rtabmap_ros)/launch/config/rgbd.rviz" />
 				-->
     </include>
 
@@ -136,7 +192,9 @@
 -->
 
   <node pkg="tf" type="static_transform_publisher" name="camera_link_to_d435" args="0 0 0 0 0 0 /camera_link /d435_link 100"/>
-  <node pkg="tf" type="static_transform_publisher" name="odom_to_t265_odom" args="0 0 0 0 0 0 /odom /camera_link 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_t265_odom" args="0 0 0 0 0 0 /odom /t265_odom_frame 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="t265_pose_to_camera_link" args="0 0 0 0 0 0 /t265_pose_frame /camera_link 100"/>
+
 
 	<!--  alternative static tfs
   <node pkg="tf" type="static_transform_publisher" name="odom_to_base" args="0 0 0 0 0 0 /odom /base_link 100"/>
